@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>京都市体育館 一括抽選申込システム</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>京都市体育館 一括抽選申込システム</h1>
+            <p class="subtitle">複数の体育館・時間帯をまとめて抽選申込</p>
+            <nav class="page-nav">
+                <a href="/" class="nav-link">予約</a>
+                <a href="/lottery" class="nav-link active">抽選申込</a>
+            </nav>
+        </header>
+
+        <!-- ログイン情報 -->
+        <section class="card" id="login-section">
+            <h2>ログイン情報</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="user-code">ユーザーコード</label>
+                    <input type="text" id="user-code" placeholder="ユーザーコードを入力">
+                </div>
+                <div class="form-group">
+                    <label for="password">パスワード</label>
+                    <input type="password" id="password" placeholder="パスワードを入力">
+                </div>
+            </div>
+        </section>
+
+        <!-- 抽選申込設定 -->
+        <section class="card" id="lottery-section">
+            <h2>抽選申込設定</h2>
+            <p class="fixed-params-info">
+                固定パラメータ: 利用目的=練習 / 入場者数=20人
+            </p>
+            <div id="lottery-list">
+                <!-- 抽選エントリがここに追加される -->
+            </div>
+            <button class="btn btn-secondary" id="add-lottery-btn">+ 抽選申込を追加</button>
+        </section>
+
+        <!-- 実行 -->
+        <section class="card" id="action-section">
+            <div class="action-bar">
+                <div class="summary" id="lottery-summary">
+                    申込件数: <span id="total-count">0</span>件
+                </div>
+                <button class="btn btn-primary btn-large" id="execute-btn" disabled>一括抽選申込を実行</button>
+            </div>
+        </section>
+
+        <!-- 進捗・結果 -->
+        <section class="card hidden" id="result-section">
+            <h2>抽選申込結果</h2>
+            <div id="progress-bar-container" class="hidden">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p class="progress-text" id="progress-text">処理中...</p>
+            </div>
+            <div id="result-list"></div>
+        </section>
+    </div>
+
+    <!-- 抽選エントリテンプレート -->
+    <template id="lottery-template">
+        <div class="lottery-entry" data-index="">
+            <div class="entry-header">
+                <h3 class="entry-title">抽選 #<span class="entry-number"></span></h3>
+                <button class="btn btn-danger btn-small remove-entry-btn" title="削除">&#10005;</button>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>競技</label>
+                    <select class="sport-select">
+                        {% for name in sports %}
+                        <option value="{{ name }}">{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>体育館</label>
+                    <select class="facility-select">
+                        <option value="">-- 体育館を選択 --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>日付（土日祝のみ）</label>
+                    <input type="date" class="date-input">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>時間帯（複数選択可）</label>
+                <div class="time-slot-grid chusen-grid">
+                    {% for key, code in time_slots.items() %}
+                    <label class="time-slot-checkbox">
+                        <input type="checkbox" value="{{ key }}">
+                        <span class="slot-label">{{ key.replace('-', ' - ') }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        // 競技ごとの利用可能施設マッピング
+        const SPORT_FACILITIES = {{ sports | tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='js/lottery.js') }}"></script>
+</body>
+</html>

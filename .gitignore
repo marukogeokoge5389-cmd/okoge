@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.log
+*.png
+debug_*
+.env
+.claude/

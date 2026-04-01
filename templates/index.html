@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>京都市体育館 一括予約システム</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>京都市体育館 一括予約システム</h1>
+            <p class="subtitle">複数の体育館・時間帯をまとめて予約</p>
+            <nav class="page-nav">
+                <a href="/" class="nav-link active">予約</a>
+                <a href="/lottery" class="nav-link">抽選申込</a>
+            </nav>
+        </header>
+
+        <!-- ログイン情報 -->
+        <section class="card" id="login-section">
+            <h2>ログイン情報</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="user-code">ユーザーコード</label>
+                    <input type="text" id="user-code" placeholder="ユーザーコードを入力">
+                </div>
+                <div class="form-group">
+                    <label for="password">パスワード</label>
+                    <input type="password" id="password" placeholder="パスワードを入力">
+                </div>
+            </div>
+        </section>
+
+        <!-- 予約設定 -->
+        <section class="card" id="reservation-section">
+            <h2>予約設定</h2>
+            <div id="reservation-list">
+                <!-- 予約エントリがここに追加される -->
+            </div>
+            <button class="btn btn-secondary" id="add-reservation-btn">+ 予約を追加</button>
+        </section>
+
+        <!-- 実行 -->
+        <section class="card" id="action-section">
+            <div class="action-bar">
+                <div class="summary" id="reservation-summary">
+                    予約件数: <span id="total-count">0</span>件
+                </div>
+                <button class="btn btn-primary btn-large" id="execute-btn" disabled>一括予約を実行</button>
+            </div>
+        </section>
+
+        <!-- 進捗・結果 -->
+        <section class="card hidden" id="result-section">
+            <h2>予約結果</h2>
+            <div id="progress-bar-container" class="hidden">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p class="progress-text" id="progress-text">処理中...</p>
+            </div>
+            <div id="result-list"></div>
+        </section>
+    </div>
+
+    <!-- 予約エントリテンプレート -->
+    <template id="reservation-template">
+        <div class="reservation-entry" data-index="">
+            <div class="entry-header">
+                <h3 class="entry-title">予約 #<span class="entry-number"></span></h3>
+                <button class="btn btn-danger btn-small remove-entry-btn" title="削除">✕</button>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>体育館</label>
+                    <select class="gym-select">
+                        <option value="">-- 体育館を選択 --</option>
+                        {% for key, name in gymnasiums.items() %}
+                        <option value="{{ key }}">{{ key }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>日付</label>
+                    <input type="date" class="date-input">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>時間帯（複数選択可）</label>
+                <div class="time-slot-grid">
+                    {% for key, label in time_slots.items() %}
+                    <label class="time-slot-checkbox">
+                        <input type="checkbox" value="{{ key }}">
+                        <span class="slot-label">{{ label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
